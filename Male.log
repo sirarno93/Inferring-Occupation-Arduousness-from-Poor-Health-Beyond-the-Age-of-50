@@ -1,0 +1,2452 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\baurin\OneDrive - UCL\UCLouvain - Impact of job on health\Data & Code\Working file\Male.log
+  log type:  text
+ opened on:  19 Jan 2022, 12:24:16
+
+. 
+. foreach j in 11 12 13 14 21 22 23 24 25 26 31 32 33 34 35 41 42 43 44 51 52 53 54 61 62 63 71 72 73 74 75 81 83 91 92 93 94 96 99 {
+  2.                                                                                                                                          
+.         *Step 7 - Further decomposition 
+.          
+.         global l `j'                          /*choose one occupation ==> 23 Teaching professionals */
+  3. 
+.         ///education 
+> 
+.         quiet {
+  4.                 
+.         use final_fileb_male_reduit, clear
+  5.          
+.         qui reg health_wave7_dicho ib33.main_job ib4.education i.health_child i.death_status_father i.death_status_mother ib4.job_parent $control 
+  6. 
+.                 forvalues i = 0/6 {
+  7.                         scalar gamma_ed_`i' = _b[`i'.education]
+  8.                 }
+  9.            
+.         use final_fileb_male_reduit, clear
+ 10. 
+.                 forvalues i=0/6 {
+ 11.                         
+.                         gen y =(education==`i')
+ 12.                         reg y ib33.main_job $control
+ 13.                         scalar rho_ed_`i'= _b[$l.main_job]
+ 14.                         drop y
+ 15.                         
+.                 }
+ 16.                 
+.         }
+ 17. 
+.         ///job_parent 
+> 
+.         quiet {
+ 18.                 
+.         use final_fileb_male_reduit, clear
+ 19.          
+.         qui reg health_wave7_dicho   ib33.main_job ib4.education i.health_child i.death_status_father i.death_status_mother ib4.job_parent $control 
+ 20. 
+.                 forvalues i = 1/7 {
+ 21.                         scalar gamma_jp_`i' = _b[`i'.job_parent]
+ 22.                 }
+ 23.            
+.         use final_fileb_male_reduit, clear
+ 24. 
+.                 forvalues i=1/7 {
+ 25.                         
+.                         gen y =(job_parent==`i')
+ 26.                         reg y ib33.main_job $control
+ 27.                         scalar rho_jp_`i'= _b[$l.main_job]
+ 28.                         drop y
+ 29.                         
+.                 }
+ 30.                 
+.         }
+ 31. 
+.         //hendrow 
+. 
+.         quiet {
+ 32.                 
+.         use final_fileb_male_reduit, clear
+ 33.          
+.         qui reg health_wave7_dicho   ib33.main_job ib4.education i.health_child i.death_status_father i.death_status_mother ib4.job_parent $control 
+ 34. 
+.                 forvalues i = 1/3 {
+ 35.                         scalar gamma_df_`i' = _b[`i'.death_status_father]
+ 36.                 }
+ 37.                 
+.                 forvalues i = 1/3 {
+ 38.                         scalar gamma_dm_`i' = _b[`i'.death_status_mother]
+ 39.                 }
+ 40.                 
+.                 forvalues i = 0/1 {
+ 41.                         scalar gamma_hc_`i' = _b[`i'.health_child]
+ 42.                 }
+ 43.                 
+.            
+.         use final_fileb_male_reduit, clear
+ 44. 
+.                 forvalues i=1/3 {
+ 45.                         
+.                         gen y =(death_status_father==`i')
+ 46.                         reg y ib33.main_job $control
+ 47.                         scalar rho_df_`i'= _b[$l.main_job]
+ 48.                         drop y
+ 49.                         
+.                 }
+ 50.                 
+.                 forvalues i=1/3 {
+ 51.                         
+.                         gen y =(death_status_mother==`i')
+ 52.                         reg y ib33.main_job $control
+ 53.                         scalar rho_dm_`i'= _b[$l.main_job]
+ 54.                         drop y
+ 55.                         
+.                 }
+ 56.                 
+.                 forvalues i=0/1 {
+ 57.                         
+.                         gen y =(health_child==`i')
+ 58.                         reg y ib33.main_job $control
+ 59.                         scalar rho_hc_`i'= _b[$l.main_job]
+ 60.                         drop y
+ 61.                         
+.                 }
+ 62.                 
+.         }
+ 63. 
+.         use beta_b, clear
+ 64. 
+.         list isco beta_* delta_edu delta_job_parent delta_hendow if  isco==$l
+ 65. 
+.         dis "GAMMA Impact of isced on bad health at 50+"
+ 66.         scalar list gamma_ed_6 gamma_ed_5 gamma_ed_4 gamma_ed_3 gamma_ed_2 gamma_ed_1 gamma_ed_0
+ 67. 
+.         dis "RHO propensity of occ. to be over/under exposed to different isced"
+ 68.         scalar list rho_ed_6 rho_ed_5 rho_ed_4 rho_ed_3 rho_ed_2 rho_ed_1 rho_ed_0
+ 69. 
+.         dis "GAMMA Impact of job_parent on bad health at 50+"
+ 70.         scalar list gamma_jp_7 gamma_jp_6 gamma_jp_5 gamma_jp_4 gamma_jp_3 gamma_jp_2 gamma_jp_1 
+ 71. 
+.         dis "RHO propensity of occ. to be over/under exposed to different job_parent"
+ 72.         scalar list rho_jp_7 rho_jp_6 rho_jp_5 rho_jp_4 rho_jp_3 rho_jp_2 rho_jp_1  
+ 73. 
+.         dis "GAMMA Impact of hendow on bad health at 50+"
+ 74.         scalar list gamma_df_3 gamma_df_2 gamma_df_1 gamma_dm_3 gamma_dm_2 gamma_dm_1 gamma_hc_0 gamma_hc_1
+ 75. 
+.         dis "RHO propensity of occ. to be over/under exposed to different hendow"
+ 76.         scalar list rho_df_3 rho_df_2 rho_df_1 rho_dm_3 rho_dm_2 rho_dm_1 rho_hc_0 rho_hc_1
+ 77. 
+.         *reconstruct delta_edu 
+.         dis "delta_edu $l"  rho_ed_0*gamma_ed_0 + rho_ed_1*gamma_ed_1 + rho_ed_2*gamma_ed_2 + rho_ed_3*gamma_ed_3 + rho_ed_4*gamma_ed_4 + rho_ed_5*gamma_ed_5 + rho_ed_6*gamma_ed_6
+ 78.         dis "delta_jp $l"   rho_jp_1*gamma_jp_1 + rho_jp_2*gamma_jp_2 + rho_jp_3*gamma_jp_3 + rho_jp_4*gamma_jp_4 + rho_jp_5*gamma_jp_5 + rho_jp_6*gamma_jp_6  + rho_jp_7*gamma_jp_7 
+ 79.         dis "delta_hendow $l"   gamma_df_3 * rho_df_3 + rho_df_2 * gamma_df_2 + rho_df_1 * gamma_df_1  + rho_dm_3 * gamma_dm_3  + rho_dm_2 * gamma_dm_2 + rho_dm_1 * gamma_dm_1 + rho_hc_0 * gamma_hc_0 + rho_hc_1 * gamma_hc_1
+ 80. 
+.         }
+
+     +---------------------------------------------------------------------------+
+     |       isco   beta_naive    beta_full   delta_e~n   delta_j~t   delta_he~w |
+     |---------------------------------------------------------------------------|
+  1. | Chief exec   -.04898201   -.03069099   -.0152794   .00050976   -.00352138 |
+     +---------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .02031502
+  rho_ed_5 =  .21522361
+  rho_ed_4 = -.03320478
+  rho_ed_3 = -.13734713
+  rho_ed_2 = -.05863341
+  rho_ed_1 =  -.0064368
+  rho_ed_0 =  .00008348
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  -.0428815
+  rho_jp_6 = -.01232393
+  rho_jp_5 = -.03251837
+  rho_jp_4 = -.01354608
+  rho_jp_3 = -.04202862
+  rho_jp_2 =  .09723049
+  rho_jp_1 =  .04606802
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.02165367
+  rho_df_2 =  .01812635
+  rho_df_1 =  .00352733
+  rho_dm_3 = -.00994482
+  rho_dm_2 =  .00647205
+  rho_dm_1 =  .00347277
+  rho_hc_0 =  .02202778
+  rho_hc_1 = -.02202778
+delta_edu 11-.0152794
+delta_jp 11.00050976
+delta_hendow 11-.00352138
+
+     +--------------------------------------------------------------------------+
+     |       isco   beta_naive   beta_f~l   delta_ed~n   delta_j~t   delta_he~w |
+     |--------------------------------------------------------------------------|
+  2. | Administra   -.03223745   -.004662   -.01771746   -.0003887   -.00946929 |
+     +--------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .01711226
+  rho_ed_5 =  .24557362
+  rho_ed_4 =  .00346398
+  rho_ed_3 = -.15382356
+  rho_ed_2 = -.07622857
+  rho_ed_1 =   -.028828
+  rho_ed_0 = -.00726973
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.01837482
+  rho_jp_6 = -.04011917
+  rho_jp_5 = -.03416448
+  rho_jp_4 =  .02279744
+  rho_jp_3 = -.00239908
+  rho_jp_2 =  .04412304
+  rho_jp_1 =  .02813708
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.03549731
+  rho_df_2 =  .03624988
+  rho_df_1 = -.00075257
+  rho_dm_3 = -.01331533
+  rho_dm_2 =  .01830482
+  rho_dm_1 = -.00498949
+  rho_hc_0 =  .06399391
+  rho_hc_1 = -.06399391
+delta_edu 12-.01771746
+delta_jp 12-.0003887
+delta_hendow 12-.00946929
+
+     +-------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_f~l   delta_ed~n   delta_jo~t   delta_h~w |
+     |-------------------------------------------------------------------------|
+  3. | Production   .03247338   .0323405   -.00158931   -.00054797   .00227016 |
+     +-------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =   .0055191
+  rho_ed_5 =  .02448092
+  rho_ed_4 = -.03032737
+  rho_ed_3 = -.01647132
+  rho_ed_2 = -.04003879
+  rho_ed_1 =  .05403787
+  rho_ed_0 =  .00279958
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.02821419
+  rho_jp_6 = -.07386509
+  rho_jp_5 =  .02123759
+  rho_jp_4 = -.01926825
+  rho_jp_3 = -.02071407
+  rho_jp_2 =    .136244
+  rho_jp_1 =    -.01542
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.01232822
+  rho_df_2 =  .01633474
+  rho_df_1 = -.00400652
+  rho_dm_3 = -.07199899
+  rho_dm_2 =  .07429423
+  rho_dm_1 = -.00229524
+  rho_hc_0 = -.00675273
+  rho_hc_1 =  .00675273
+delta_edu 13-.00158931
+delta_jp 13-.00054797
+delta_hendow 13.00227016
+
+     +--------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_ed~n   delta_j~t   delta_he~w |
+     |--------------------------------------------------------------------------|
+  4. | Hospitalit   .00265368   .01145865   -.00091588   .00108259   -.00897167 |
+     +--------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .00341492
+  rho_ed_5 = -.00020842
+  rho_ed_4 = -.03440234
+  rho_ed_3 =  .07002755
+  rho_ed_2 = -.05016841
+  rho_ed_1 =   .0135111
+  rho_ed_0 =  -.0021744
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.00576608
+  rho_jp_6 =  .00818323
+  rho_jp_5 =  .03771269
+  rho_jp_4 =  .01106953
+  rho_jp_3 = -.04528047
+  rho_jp_2 =  .05494863
+  rho_jp_1 = -.06086754
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.02580502
+  rho_df_2 =  .05916013
+  rho_df_1 = -.03335511
+  rho_dm_3 = -.05186147
+  rho_dm_2 = -.02101303
+  rho_dm_1 =  .07287449
+  rho_hc_0 =  .06778298
+  rho_hc_1 = -.06778298
+delta_edu 14-.00091588
+delta_jp 14.00108259
+delta_hendow 14-.00897167
+
+     +--------------------------------------------------------------------------+
+     |       isco   beta_naive   beta_f~l   delta_ed~n   delta_jo~t   delta_h~w |
+     |--------------------------------------------------------------------------|
+  5. | Science an   -.01526316   .0032731   -.02216715   -.00031382   .00394472 |
+     +--------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .01988605
+  rho_ed_5 =  .33353199
+  rho_ed_4 = -.03810118
+  rho_ed_3 = -.22408579
+  rho_ed_2 = -.07471894
+  rho_ed_1 = -.01552827
+  rho_ed_0 = -.00098386
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.02808704
+  rho_jp_6 = -.03155345
+  rho_jp_5 = -.00629618
+  rho_jp_4 = -.00603369
+  rho_jp_3 = -.01064287
+  rho_jp_2 =  .07027315
+  rho_jp_1 =  .01234008
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 =  .00237916
+  rho_df_2 = -.01544251
+  rho_df_1 =  .01306335
+  rho_dm_3 =  .01813965
+  rho_dm_2 = -.01516265
+  rho_dm_1 =   -.002977
+  rho_hc_0 = -.03217524
+  rho_hc_1 =  .03217524
+delta_edu 21-.02216715
+delta_jp 21-.00031382
+delta_hendow 21.00394472
+
+     +-----------------------------------------------------------------------------+
+     |       isco   beta_naive    beta_full   delta_ed~n   delta_jo~t   delta_he~w |
+     |-----------------------------------------------------------------------------|
+  6. | Health pro   -.04948595   -.02223252   -.02601371   -.00047946   -.00076027 |
+     +-----------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .08661711
+  rho_ed_5 =   .2484613
+  rho_ed_4 =  -.0215993
+  rho_ed_3 = -.21115946
+  rho_ed_2 = -.09655365
+  rho_ed_1 = -.00130592
+  rho_ed_0 = -.00446008
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.07417855
+  rho_jp_6 = -.07142115
+  rho_jp_5 = -.01346487
+  rho_jp_4 = -.01155224
+  rho_jp_3 = -.03707284
+  rho_jp_2 =  .17370581
+  rho_jp_1 =  .03398384
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 =  .01709061
+  rho_df_2 = -.02124616
+  rho_df_1 =  .00415555
+  rho_dm_3 =  .04885634
+  rho_dm_2 =  -.0717572
+  rho_dm_1 =  .02290086
+  rho_hc_0 = -.00516086
+  rho_hc_1 =  .00516086
+delta_edu 22-.02601371
+delta_jp 22-.00047946
+delta_hendow 22-.00076027
+
+     +----------------------------------------------------------------------------+
+     |       isco   beta_naive    beta_full   delta_ed~n   delta_jo~t   delta_h~w |
+     |----------------------------------------------------------------------------|
+  7. | Teaching p   -.03444295   -.00303642   -.03568256   -.00021053   .00448655 |
+     +----------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .08255445
+  rho_ed_5 =  .41900855
+  rho_ed_4 = -.04743299
+  rho_ed_3 = -.29020241
+  rho_ed_2 = -.09690253
+  rho_ed_1 = -.05704566
+  rho_ed_0 =  -.0099794
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.03854604
+  rho_jp_6 = -.04163073
+  rho_jp_5 =  -.0157344
+  rho_jp_4 =  .02447996
+  rho_jp_3 = -.01919267
+  rho_jp_2 =  .08417848
+  rho_jp_1 =   .0064454
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 =  .04452741
+  rho_df_2 = -.02272274
+  rho_df_1 = -.02180467
+  rho_dm_3 =  .01576511
+  rho_dm_2 =  .00513926
+  rho_dm_1 = -.02090437
+  rho_hc_0 = -.01801911
+  rho_hc_1 =  .01801911
+delta_edu 23-.03568256
+delta_jp 23-.00021053
+delta_hendow 23.00448655
+
+     +---------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_ed~n   delta_jo~t   delta_he~w |
+     |---------------------------------------------------------------------------|
+  8. | Business a   .03113636   .05221604   -.01460437   -.00078293   -.00569238 |
+     +---------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .00667238
+  rho_ed_5 =  .22901046
+  rho_ed_4 = -.04012314
+  rho_ed_3 = -.11450945
+  rho_ed_2 = -.04030094
+  rho_ed_1 = -.05658676
+  rho_ed_0 =  .01583744
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  -.0488628
+  rho_jp_6 = -.06807626
+  rho_jp_5 = -.00164016
+  rho_jp_4 =  .00523011
+  rho_jp_3 = -.01226365
+  rho_jp_2 =  .11420135
+  rho_jp_1 =  .01141141
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.02164425
+  rho_df_2 =  .01967167
+  rho_df_1 =  .00197258
+  rho_dm_3 = -.01220811
+  rho_dm_2 = -.01868477
+  rho_dm_1 =  .03089288
+  rho_hc_0 =   .0322452
+  rho_hc_1 =  -.0322452
+delta_edu 24-.01460437
+delta_jp 24-.00078293
+delta_hendow 24-.00569238
+
+     +----------------------------------------------------------------------------+
+     |       isco   beta_naive   beta_full   delta_ed~n   delta_jo~t   delta_he~w |
+     |----------------------------------------------------------------------------|
+  9. | Informatio   -.05005275   -.0129814   -.01989878   -.00157125   -.01560132 |
+     +----------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00089063
+  rho_ed_5 =   .3241384
+  rho_ed_4 =   -.012289
+  rho_ed_3 = -.18753498
+  rho_ed_2 = -.07868469
+  rho_ed_1 = -.03869142
+  rho_ed_0 = -.00604769
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.06327578
+  rho_jp_6 = -.06760888
+  rho_jp_5 = -.04485267
+  rho_jp_4 =  .04537011
+  rho_jp_3 =  .02068095
+  rho_jp_2 =  .07937016
+  rho_jp_1 =  .03031611
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.05107594
+  rho_df_2 = -.03257578
+  rho_df_1 =  .08365172
+  rho_dm_3 = -.02601828
+  rho_dm_2 = -.05912361
+  rho_dm_1 =  .08514189
+  rho_hc_0 =  .04434566
+  rho_hc_1 = -.04434566
+delta_edu 25-.01989878
+delta_jp 25-.00157125
+delta_hendow 25-.01560132
+
+     +----------------------------------------------------------------------------+
+     |       isco   beta_naive    beta_full   delta_ed~n   delta_jo~t   delta_h~w |
+     |----------------------------------------------------------------------------|
+ 10. | Legal, soc   -.03275747   -.02004816   -.02284479   -.00044445   .01057993 |
+     +----------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .03436262
+  rho_ed_5 =  .32299551
+  rho_ed_4 = -.05276318
+  rho_ed_3 = -.23125998
+  rho_ed_2 = -.04657659
+  rho_ed_1 = -.02996024
+  rho_ed_0 =  .00320186
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.06864754
+  rho_jp_6 = -.08143118
+  rho_jp_5 = -.00795212
+  rho_jp_4 =  .03141959
+  rho_jp_3 =  -.0351269
+  rho_jp_2 =  .14270498
+  rho_jp_1 =  .01903316
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.00043088
+  rho_df_2 =  .02423556
+  rho_df_1 = -.02380468
+  rho_dm_3 =  .03952719
+  rho_dm_2 = -.01908091
+  rho_dm_1 = -.02044628
+  rho_hc_0 = -.05111832
+  rho_hc_1 =  .05111832
+delta_edu 26-.02284478
+delta_jp 26-.00044445
+delta_hendow 26.01057993
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 11. | Science an   .04862607   .04462117   .00020997   .00022518   .00356975 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00483124
+  rho_ed_5 =   .0046946
+  rho_ed_4 = -.00183552
+  rho_ed_3 =  .00472081
+  rho_ed_2 = -.02595383
+  rho_ed_1 =  .02084473
+  rho_ed_0 =  .00236044
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .02436249
+  rho_jp_6 = -.00302484
+  rho_jp_5 =  .01645274
+  rho_jp_4 = -.00523371
+  rho_jp_3 = -.00216884
+  rho_jp_2 = -.01565368
+  rho_jp_1 = -.01473416
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.03227391
+  rho_df_2 =    .050813
+  rho_df_1 = -.01853909
+  rho_dm_3 =  .02019537
+  rho_dm_2 = -.01921323
+  rho_dm_1 = -.00098214
+  rho_hc_0 = -.00939902
+  rho_hc_1 =  .00939902
+delta_edu 31.00020997
+delta_jp 31.00022518
+delta_hendow 31.00356975
+
+     +--------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_ed~n   delta_jo~t   delta_h~w |
+     |--------------------------------------------------------------------------|
+ 12. | Health ass   .06224069   .05122003   -.00555352   -.00067121   .01724539 |
+     +--------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .01700497
+  rho_ed_5 =  .04192897
+  rho_ed_4 =  .00235773
+  rho_ed_3 = -.00700008
+  rho_ed_2 = -.06293007
+  rho_ed_1 =  .00077284
+  rho_ed_0 =  .00786565
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.02598984
+  rho_jp_6 = -.06883073
+  rho_jp_5 = -.00486665
+  rho_jp_4 =  .02536756
+  rho_jp_3 = -.00084106
+  rho_jp_2 = -.00775403
+  rho_jp_1 =  .08291475
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 =  .04558083
+  rho_df_2 = -.02429504
+  rho_df_1 = -.02128578
+  rho_dm_3 = -.04364947
+  rho_dm_2 =  .02736686
+  rho_dm_1 =  .01628261
+  rho_hc_0 = -.10001879
+  rho_hc_1 =  .10001879
+delta_edu 32-.00555352
+delta_jp 32-.00067121
+delta_hendow 32.01724539
+
+     +-------------------------------------------------------------------+
+     |       isco   beta_n~e   beta_f~l   delta_~n   delta_~t   delta_~w |
+     |-------------------------------------------------------------------|
+ 13. | Business a          0          0          0          0          0 |
+     +-------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =          0
+  rho_ed_5 =          0
+  rho_ed_4 =          0
+  rho_ed_3 =          0
+  rho_ed_2 =          0
+  rho_ed_1 =          0
+  rho_ed_0 =          0
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =          0
+  rho_jp_6 =          0
+  rho_jp_5 =          0
+  rho_jp_4 =          0
+  rho_jp_3 =          0
+  rho_jp_2 =          0
+  rho_jp_1 =          0
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 =          0
+  rho_df_2 =          0
+  rho_df_1 =          0
+  rho_dm_3 =          0
+  rho_dm_2 =          0
+  rho_dm_1 =          0
+  rho_hc_0 =          0
+  rho_hc_1 =          0
+delta_edu 330
+delta_jp 330
+delta_hendow 330
+
+     +--------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_ed~n   delta_jo~t   delta_h~w |
+     |--------------------------------------------------------------------------|
+ 14. | Legal, soc   .00571501   .00475547   -.00181944   -.00070459   .00348356 |
+     +--------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  -.0077782
+  rho_ed_5 =  .05628121
+  rho_ed_4 = -.00843157
+  rho_ed_3 = -.06265503
+  rho_ed_2 = -.02208474
+  rho_ed_1 =   .0264604
+  rho_ed_0 =  .01820793
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.05415417
+  rho_jp_6 =   .0275363
+  rho_jp_5 =  .01430309
+  rho_jp_4 =  .01364602
+  rho_jp_3 =  .02178063
+  rho_jp_2 = -.05073755
+  rho_jp_1 =  .02762568
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.02282502
+  rho_df_2 =  .08413599
+  rho_df_1 = -.06131097
+  rho_dm_3 =  .06772517
+  rho_dm_2 = -.00139722
+  rho_dm_1 = -.06632794
+  rho_hc_0 =  .02113347
+  rho_hc_1 = -.02113347
+delta_edu 34-.00181944
+delta_jp 34-.00070459
+delta_hendow 34.00348356
+
+     +---------------------------------------------------------------------------+
+     |       isco   beta_naive    beta_full   delta_e~n   delta_j~t   delta_he~w |
+     |---------------------------------------------------------------------------|
+ 15. | Informatio   -.02260192   -.01650229   .00300338   .00094748   -.01005049 |
+     +---------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00756802
+  rho_ed_5 = -.05276163
+  rho_ed_4 =   .0062606
+  rho_ed_3 =  .08894038
+  rho_ed_2 = -.05642898
+  rho_ed_1 =  .02636777
+  rho_ed_0 = -.00481012
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.01451564
+  rho_jp_6 =  .02658771
+  rho_jp_5 = -.00228755
+  rho_jp_4 =  -.0002998
+  rho_jp_3 = -.03460755
+  rho_jp_2 =  .02950134
+  rho_jp_1 = -.00437851
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.10295608
+  rho_df_2 =   .0344065
+  rho_df_1 =  .06854958
+  rho_dm_3 = -.09838294
+  rho_dm_2 =  .04059381
+  rho_dm_1 =  .05778913
+  rho_hc_0 =  .03130228
+  rho_hc_1 = -.03130228
+delta_edu 35.00300338
+delta_jp 35.00094748
+delta_hendow 35-.01005049
+
+     +---------------------------------------------------------------------------+
+     |       isco   beta_naive    beta_full   delta_e~n   delta_j~t   delta_he~w |
+     |---------------------------------------------------------------------------|
+ 16. | General an   -.01593807   -.01722311   .00058764   .00082697   -.00012958 |
+     +---------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  -.0053559
+  rho_ed_5 = -.00744102
+  rho_ed_4 = -.04805079
+  rho_ed_3 =  .10714004
+  rho_ed_2 = -.01496529
+  rho_ed_1 = -.04268196
+  rho_ed_0 =  .01135491
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.00872433
+  rho_jp_6 = -.02937564
+  rho_jp_5 =  .01315326
+  rho_jp_4 =  .07418435
+  rho_jp_3 = -.03576612
+  rho_jp_2 = -.05399285
+  rho_jp_1 =  .04052133
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.01140834
+  rho_df_2 =  .00956846
+  rho_df_1 =  .00183988
+  rho_dm_3 = -.02554024
+  rho_dm_2 =  .00766872
+  rho_dm_1 =  .01787152
+  rho_hc_0 = -.00050093
+  rho_hc_1 =  .00050093
+delta_edu 41.00058764
+delta_jp 41.00082697
+delta_hendow 41-.00012958
+
+     +--------------------------------------------------------------------------+
+     |       isco   beta_naive    beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |--------------------------------------------------------------------------|
+ 17. | Customer s   -.01226121   -.02145079   .00438142   .00102977   .00377839 |
+     +--------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .00759853
+  rho_ed_5 = -.09820228
+  rho_ed_4 = -.04224413
+  rho_ed_3 =  .15682769
+  rho_ed_2 = -.02528268
+  rho_ed_1 =  .01114198
+  rho_ed_0 =  -.0098391
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.02058662
+  rho_jp_6 = -.02945326
+  rho_jp_5 =   .0334522
+  rho_jp_4 =  .04323506
+  rho_jp_3 =  -.0539027
+  rho_jp_2 =  .00377613
+  rho_jp_1 =   .0234792
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.00270507
+  rho_df_2 =  .00680962
+  rho_df_1 = -.00410455
+  rho_dm_3 = -.03757094
+  rho_dm_2 = -.01267126
+  rho_dm_1 =   .0502422
+  rho_hc_0 = -.02662609
+  rho_hc_1 =  .02662609
+delta_edu 42.00438142
+delta_jp 42.00102977
+delta_hendow 42.00377839
+
+     +--------------------------------------------------------------------------+
+     |      isco   beta_naive    beta_full   delta_e~n   delta_j~t   delta_he~w |
+     |--------------------------------------------------------------------------|
+ 18. | Numerical   -.02431984   -.03069741   .00653725   .00030979   -.00046948 |
+     +--------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .00709617
+  rho_ed_5 = -.11930188
+  rho_ed_4 = -.01192006
+  rho_ed_3 =  .07797573
+  rho_ed_2 =  .02651863
+  rho_ed_1 =  -.0086626
+  rho_ed_0 =  .02829402
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .02210926
+  rho_jp_6 = -.05512612
+  rho_jp_5 =  .01571111
+  rho_jp_4 =  .10697276
+  rho_jp_3 = -.01171112
+  rho_jp_2 = -.05533246
+  rho_jp_1 = -.02262342
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.00292439
+  rho_df_2 =  .00002839
+  rho_df_1 =    .002896
+  rho_dm_3 = -.06830096
+  rho_dm_2 =  .02188417
+  rho_dm_1 =  .04641679
+  rho_hc_0 =  -.0021281
+  rho_hc_1 =   .0021281
+delta_edu 43.00653725
+delta_jp 43.00030979
+delta_hendow 43-.00046948
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 19. | Other cler   .03604946   .01704058   .00869409   .00194546   .00836933 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00217135
+  rho_ed_5 = -.12032542
+  rho_ed_4 = -.03395698
+  rho_ed_3 =  .07364173
+  rho_ed_2 =  .02659323
+  rho_ed_1 =  .06109144
+  rho_ed_0 = -.00487265
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .01828984
+  rho_jp_6 = -.00017734
+  rho_jp_5 =  .03716142
+  rho_jp_4 =  .10746226
+  rho_jp_3 = -.06008974
+  rho_jp_2 = -.05642692
+  rho_jp_1 = -.04621952
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.03522592
+  rho_df_2 =   .0718406
+  rho_df_1 = -.03661468
+  rho_dm_3 = -.01229133
+  rho_dm_2 =  .03957544
+  rho_dm_1 = -.02728411
+  rho_hc_0 = -.02332793
+  rho_hc_1 =  .02332793
+delta_edu 44.00869408
+delta_jp 44.00194546
+delta_hendow 44.00836933
+
+     +-----------------------------------------------------------------------+
+     |       isco   beta_n~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |-----------------------------------------------------------------------|
+ 20. | Personal s   .0635688   .04729485   .01247715   .00203603   .00176078 |
+     +-----------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00207044
+  rho_ed_5 = -.18048015
+  rho_ed_4 =  -.0172118
+  rho_ed_3 =  .07537396
+  rho_ed_2 =  .02327147
+  rho_ed_1 =  .09137462
+  rho_ed_0 =  .00974235
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .05934266
+  rho_jp_6 = -.02821032
+  rho_jp_5 =  .05256334
+  rho_jp_4 =   .0465039
+  rho_jp_3 = -.06393621
+  rho_jp_2 = -.06224246
+  rho_jp_1 = -.00402092
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.02007409
+  rho_df_2 =  .03924628
+  rho_df_1 = -.01917219
+  rho_dm_3 = -.03996605
+  rho_dm_2 =  .05346921
+  rho_dm_1 = -.01350316
+  rho_hc_0 =   .0056424
+  rho_hc_1 =  -.0056424
+delta_edu 51.01247715
+delta_jp 51.00203603
+delta_hendow 51.00176078
+
+     +---------------------------------------------------------------------------+
+     |       isco   beta_naive    beta_full   delta_e~n   delta_jo~t   delta_h~w |
+     |---------------------------------------------------------------------------|
+ 21. | Sales work   -.01111956   -.02899064   .01215138   -.00003088   .00575057 |
+     +---------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00182678
+  rho_ed_5 = -.15916444
+  rho_ed_4 = -.04110443
+  rho_ed_3 =  .04900221
+  rho_ed_2 =   .0525848
+  rho_ed_1 =  .10816919
+  rho_ed_0 = -.00766055
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.02400638
+  rho_jp_6 = -.03069021
+  rho_jp_5 =  .01635048
+  rho_jp_4 =  .08824637
+  rho_jp_3 = -.00671409
+  rho_jp_2 = -.06017403
+  rho_jp_1 =  .01698786
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.02393102
+  rho_df_2 =   .0566931
+  rho_df_1 = -.03276208
+  rho_dm_3 = -.00210454
+  rho_dm_2 =    .010294
+  rho_dm_1 = -.00818946
+  rho_hc_0 =  -.0138062
+  rho_hc_1 =   .0138062
+delta_edu 52.01215138
+delta_jp 52-.00003088
+delta_hendow 52.00575057
+
+     +-----------------------------------------------------------------------+
+     |       isco   beta_n~e   beta_full   delta_e~n   delta_jo~t   delta_~w |
+     |-----------------------------------------------------------------------|
+ 22. | Personal c   .0779741   .04566914   .00404967   -.00122661   .0294819 |
+     +-----------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00890859
+  rho_ed_5 = -.00908679
+  rho_ed_4 = -.04476514
+  rho_ed_3 = -.04284169
+  rho_ed_2 =   .0819066
+  rho_ed_1 =  .02276527
+  rho_ed_0 =  .00093033
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =   .0394876
+  rho_jp_6 = -.07374663
+  rho_jp_5 =  .06652739
+  rho_jp_4 =  .00974443
+  rho_jp_3 =  .03582227
+  rho_jp_2 = -.01923701
+  rho_jp_1 = -.05859805
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.00495484
+  rho_df_2 =  .00678257
+  rho_df_1 = -.00182773
+  rho_dm_3 =  .05130388
+  rho_dm_2 = -.04429972
+  rho_dm_1 = -.00700416
+  rho_hc_0 = -.18203839
+  rho_hc_1 =  .18203839
+delta_edu 53.00404967
+delta_jp 53-.00122661
+delta_hendow 53.02948191
+
+     +-----------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_~w |
+     |-----------------------------------------------------------------------|
+ 23. | Protective   .01971344   .00340945   .00708979   .00123529   .0079789 |
+     +-----------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00776381
+  rho_ed_5 = -.08328833
+  rho_ed_4 = -.03144459
+  rho_ed_3 =  .04604844
+  rho_ed_2 =  .01902159
+  rho_ed_1 =  .03938453
+  rho_ed_0 =  .01804218
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .02557764
+  rho_jp_6 =  .00002983
+  rho_jp_5 =  .03608927
+  rho_jp_4 =  .01421527
+  rho_jp_3 = -.03586851
+  rho_jp_2 = -.07454943
+  rho_jp_1 =  .03450593
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.04656217
+  rho_df_2 =  .05678278
+  rho_df_1 =  -.0102206
+  rho_dm_3 = -.01404958
+  rho_dm_2 =  .03449427
+  rho_dm_1 = -.02044469
+  rho_hc_0 = -.03510984
+  rho_hc_1 =  .03510984
+delta_edu 54.00708979
+delta_jp 54.00123529
+delta_hendow 54.0079789
+
+     +-------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_jo~t   delta_h~w |
+     |-------------------------------------------------------------------------|
+ 24. | Market-ori   .04142639   .01650861   .01682351   -.00031112   .00840538 |
+     +-------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  -.0072884
+  rho_ed_5 = -.19618237
+  rho_ed_4 = -.04549631
+  rho_ed_3 = -.03738098
+  rho_ed_2 =  .03727834
+  rho_ed_1 =  .18312786
+  rho_ed_0 =  .06594185
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.05339317
+  rho_jp_6 = -.15079951
+  rho_jp_5 =  .48357284
+  rho_jp_4 = -.07571057
+  rho_jp_3 = -.07394092
+  rho_jp_2 = -.09173023
+  rho_jp_1 = -.03799844
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.04014876
+  rho_df_2 =  .07819581
+  rho_df_1 = -.03804705
+  rho_dm_3 = -.03452729
+  rho_dm_2 =   .0333542
+  rho_dm_1 =  .00117309
+  rho_hc_0 = -.02549938
+  rho_hc_1 =  .02549938
+delta_edu 61.01682351
+delta_jp 61-.00031112
+delta_hendow 61.00840538
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 25. | Market-ori   .11264696   .07901498   .01714886   .00091914   .01556398 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  .00051235
+  rho_ed_5 = -.22124774
+  rho_ed_4 = -.06304588
+  rho_ed_3 =  .03340543
+  rho_ed_2 =  .09355028
+  rho_ed_1 =  .13629032
+  rho_ed_0 =  .02053523
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.03281294
+  rho_jp_6 = -.05178252
+  rho_jp_5 =  .29482526
+  rho_jp_4 = -.02325665
+  rho_jp_3 = -.07150002
+  rho_jp_2 = -.09846136
+  rho_jp_1 = -.01701177
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.00962744
+  rho_df_2 =  .04015812
+  rho_df_1 = -.03053068
+  rho_dm_3 = -.00167176
+  rho_dm_2 =  .07468797
+  rho_dm_1 = -.07301621
+  rho_hc_0 = -.06734256
+  rho_hc_1 =  .06734256
+delta_edu 62.01714886
+delta_jp 62.00091914
+delta_hendow 62.01556398
+
+     +--------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_jo~t   delta_he~w |
+     |--------------------------------------------------------------------------|
+ 26. | Subsistenc   .07991506   .05871641   .02165053   -.00033829   -.00011359 |
+     +--------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.01151059
+  rho_ed_5 = -.22289353
+  rho_ed_4 = -.05333522
+  rho_ed_3 = -.12099452
+  rho_ed_2 =  .23250941
+  rho_ed_1 =  .12592774
+  rho_ed_0 =  .05029672
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  -.0630062
+  rho_jp_6 = -.15914706
+  rho_jp_5 =  .54593998
+  rho_jp_4 = -.08248143
+  rho_jp_3 = -.07942937
+  rho_jp_2 = -.13421743
+  rho_jp_1 = -.02765848
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 =  .02735232
+  rho_df_2 =  .00173762
+  rho_df_1 = -.02908994
+  rho_dm_3 =  -.0095339
+  rho_dm_2 =   .0322476
+  rho_dm_1 =  -.0227137
+  rho_hc_0 =  .01765306
+  rho_hc_1 = -.01765306
+delta_edu 63.02165053
+delta_jp 63-.00033829
+delta_hendow 63-.00011359
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 27. | Building a   .08911475   .05820514   .01872763   .00289166   .00929033 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00926264
+  rho_ed_5 =  -.2423574
+  rho_ed_4 = -.04054344
+  rho_ed_3 =  .06947505
+  rho_ed_2 =  .07213527
+  rho_ed_1 =  .12425088
+  rho_ed_0 =  .02630227
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .02053907
+  rho_jp_6 =  .07919568
+  rho_jp_5 =  .11249206
+  rho_jp_4 =  -.0491308
+  rho_jp_3 =  -.0835823
+  rho_jp_2 = -.10299189
+  rho_jp_1 =  .02347818
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.06174206
+  rho_df_2 =  .09093373
+  rho_df_1 = -.02919167
+  rho_dm_3 = -.04722291
+  rho_dm_2 =  .08195105
+  rho_dm_1 = -.03472814
+  rho_hc_0 = -.02751694
+  rho_hc_1 =  .02751694
+delta_edu 71.01872763
+delta_jp 71.00289166
+delta_hendow 71.00929033
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 28. | Metal, mac   .09546888   .06781843   .01585349   .00238819   .00940878 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  -.0076968
+  rho_ed_5 =  -.2247617
+  rho_ed_4 =  -.0212745
+  rho_ed_3 =  .11876021
+  rho_ed_2 =  .04074198
+  rho_ed_1 =  .08272245
+  rho_ed_0 =  .01150836
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .05887657
+  rho_jp_6 =  .03664367
+  rho_jp_5 =  .06613526
+  rho_jp_4 = -.03324707
+  rho_jp_3 = -.06234312
+  rho_jp_2 =  -.0931478
+  rho_jp_1 =   .0270825
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.03310555
+  rho_df_2 =  .06508358
+  rho_df_1 = -.03197803
+  rho_dm_3 = -.03004811
+  rho_dm_2 =  .05939223
+  rho_dm_1 = -.02934412
+  rho_hc_0 = -.03133833
+  rho_hc_1 =  .03133833
+delta_edu 72.01585349
+delta_jp 72.00238819
+delta_hendow 72.00940878
+
+     +-----------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_~n   delta_j~t   delta_h~w |
+     |-----------------------------------------------------------------------|
+ 29. | Handicraft   .07878586   .04526766   .0136858   .00356638   .01626602 |
+     +-----------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00835605
+  rho_ed_5 = -.18269125
+  rho_ed_4 = -.02295549
+  rho_ed_3 =  .07862862
+  rho_ed_2 =  .05043513
+  rho_ed_1 =  .07498851
+  rho_ed_0 =  .00995053
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .02619979
+  rho_jp_6 =   .1429111
+  rho_jp_5 = -.02078634
+  rho_jp_4 = -.01899664
+  rho_jp_3 = -.08319723
+  rho_jp_2 = -.04591944
+  rho_jp_1 = -.00021125
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.06347749
+  rho_df_2 =  .08665129
+  rho_df_1 = -.02317381
+  rho_dm_3 =  .00415359
+  rho_dm_2 =  .04111186
+  rho_dm_1 = -.04526546
+  rho_hc_0 = -.07459357
+  rho_hc_1 =  .07459357
+delta_edu 73.0136858
+delta_jp 73.00356638
+delta_hendow 73.01626602
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 30. | Electrical   .07386311   .04837848   .01207041   .00253556   .01087866 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00873563
+  rho_ed_5 = -.18177381
+  rho_ed_4 =  .00176124
+  rho_ed_3 =  .13066012
+  rho_ed_2 =  .01731145
+  rho_ed_1 =  .04117271
+  rho_ed_0 = -.00039608
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =   .0436789
+  rho_jp_6 =  .06878795
+  rho_jp_5 =  .03188591
+  rho_jp_4 = -.01316323
+  rho_jp_3 = -.06052928
+  rho_jp_2 = -.08296082
+  rho_jp_1 =  .01230058
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.01340501
+  rho_df_2 =  .02477645
+  rho_df_1 = -.01137145
+  rho_dm_3 =  .02035298
+  rho_dm_2 = -.00721921
+  rho_dm_1 = -.01313377
+  rho_hc_0 = -.05859667
+  rho_hc_1 =  .05859667
+delta_edu 74.01207041
+delta_jp 74.00253556
+delta_hendow 74.01087866
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 31. | Food proce   .05656885   .03007099   .01545083   .00249459   .00855244 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00497394
+  rho_ed_5 = -.20577893
+  rho_ed_4 = -.02686915
+  rho_ed_3 =  .05399926
+  rho_ed_2 =  .06992306
+  rho_ed_1 =  .09969407
+  rho_ed_0 =  .01400563
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .03692114
+  rho_jp_6 =  .07028702
+  rho_jp_5 =  .08282329
+  rho_jp_4 = -.03194183
+  rho_jp_3 = -.06354888
+  rho_jp_2 = -.09720619
+  rho_jp_1 =  .00266545
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.05696738
+  rho_df_2 =  .07975289
+  rho_df_1 =  -.0227855
+  rho_dm_3 = -.04584462
+  rho_dm_2 =  .04949365
+  rho_dm_1 = -.00364903
+  rho_hc_0 = -.03172628
+  rho_hc_1 =  .03172628
+delta_edu 75.01545083
+delta_jp 75.00249459
+delta_hendow 75.00855244
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 32. | Stationary   .05482757   .02367626   .01692767   .00270941   .01151424 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00895237
+  rho_ed_5 = -.21063271
+  rho_ed_4 = -.04369576
+  rho_ed_3 =  .04591702
+  rho_ed_2 =  .07992506
+  rho_ed_1 =  .11512077
+  rho_ed_0 =  .02231799
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .13487653
+  rho_jp_6 = -.03119974
+  rho_jp_5 =  .08124284
+  rho_jp_4 = -.05432361
+  rho_jp_3 = -.07420436
+  rho_jp_2 = -.08507046
+  rho_jp_1 =  .02867879
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 =  -.0944929
+  rho_df_2 =  .13634682
+  rho_df_1 = -.04185392
+  rho_dm_3 = -.01476086
+  rho_dm_2 =   .0592224
+  rho_dm_1 = -.04446154
+  rho_hc_0 = -.03102567
+  rho_hc_1 =  .03102567
+delta_edu 81.01692767
+delta_jp 81.00270941
+delta_hendow 81.01151424
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 34. | Drivers an   .08991777   .06060727   .02136501   .00237865   .00556684 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00884203
+  rho_ed_5 = -.26901838
+  rho_ed_4 = -.05852127
+  rho_ed_3 =  .06488107
+  rho_ed_2 =  .13224821
+  rho_ed_1 =  .12239724
+  rho_ed_0 =  .01685516
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .09313347
+  rho_jp_6 =  -.0309977
+  rho_jp_5 =  .11914939
+  rho_jp_4 = -.03373761
+  rho_jp_3 = -.07488417
+  rho_jp_2 = -.08512209
+  rho_jp_1 =  .01245872
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.03396686
+  rho_df_2 =  .05753563
+  rho_df_1 = -.02356877
+  rho_dm_3 = -.03612323
+  rho_dm_2 =   .0736879
+  rho_dm_1 = -.03756467
+  rho_hc_0 = -.01056953
+  rho_hc_1 =  .01056953
+delta_edu 83.021365
+delta_jp 83.00237865
+delta_hendow 83.00556684
+
+     +-------------------------------------------------------------------------+
+     |       isco   beta_na~e    beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |-------------------------------------------------------------------------|
+ 35. | Cleaners a   .00952207   -.01503843   .01295802   .00203989   .00956259 |
+     +-------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 =  -.0069451
+  rho_ed_5 = -.14478334
+  rho_ed_4 =  -.0043708
+  rho_ed_3 = -.09590715
+  rho_ed_2 =  .03609515
+  rho_ed_1 =  .13941127
+  rho_ed_0 =  .07649998
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .13453822
+  rho_jp_6 =  .03047689
+  rho_jp_5 =  .02399684
+  rho_jp_4 =  .00864425
+  rho_jp_3 =  -.0182928
+  rho_jp_2 = -.15623483
+  rho_jp_1 = -.02312857
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.06770788
+  rho_df_2 =  .12102694
+  rho_df_1 = -.05331906
+  rho_dm_3 = -.06723185
+  rho_dm_2 =  .05661604
+  rho_dm_1 =  .01061582
+  rho_hc_0 =  -.0213057
+  rho_hc_1 =   .0213057
+delta_edu 91.01295802
+delta_jp 91.00203989
+delta_hendow 91.00956259
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 36. | Agricultur   .09113581   .06222101   .01936445   .00252109   .00702925 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00878251
+  rho_ed_5 = -.21693143
+  rho_ed_4 = -.04325851
+  rho_ed_3 =    -.08381
+  rho_ed_2 =  .01739812
+  rho_ed_1 =  .30459082
+  rho_ed_0 =   .0307935
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .26126274
+  rho_jp_6 = -.18210843
+  rho_jp_5 =  .14189829
+  rho_jp_4 = -.06679929
+  rho_jp_3 = -.07880607
+  rho_jp_2 = -.05476644
+  rho_jp_1 = -.02068079
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 =  .05864034
+  rho_df_2 = -.04459975
+  rho_df_1 = -.01404059
+  rho_dm_3 = -.01233892
+  rho_dm_2 = -.01131194
+  rho_dm_1 =  .02365086
+  rho_hc_0 = -.04483306
+  rho_hc_1 =  .04483306
+delta_edu 92.01936445
+delta_jp 92.00252109
+delta_hendow 92.00702926
+
+     +----------------------------------------------------------------------+
+     |      isco   beta_na~e   beta_f~l   delta_e~n   delta_j~t   delta_h~w |
+     |----------------------------------------------------------------------|
+ 37. | Labourers   .10436257   .0696815   .02057464   .00202578   .01208065 |
+     +----------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00586749
+  rho_ed_5 = -.24210853
+  rho_ed_4 = -.04655888
+  rho_ed_3 = -.04866904
+  rho_ed_2 =  .12990713
+  rho_ed_1 =  .17766826
+  rho_ed_0 =  .03562855
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =  .09149132
+  rho_jp_6 = -.00984855
+  rho_jp_5 =   .0941197
+  rho_jp_4 = -.04081312
+  rho_jp_3 = -.05450546
+  rho_jp_2 = -.08764188
+  rho_jp_1 =  .00719798
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.05270797
+  rho_df_2 =  .10058029
+  rho_df_1 = -.04787232
+  rho_dm_3 =  -.0374406
+  rho_dm_2 =  .08929144
+  rho_dm_1 = -.05185084
+  rho_hc_0 = -.03336513
+  rho_hc_1 =  .03336513
+delta_edu 93.02057464
+delta_jp 93.00202578
+delta_hendow 93.01208065
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 38. | Food prepa   .33732617   .28191567   .01158049   -.0022843   .04611432 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00233938
+  rho_ed_5 = -.16606398
+  rho_ed_4 = -.10641932
+  rho_ed_3 =  .12980386
+  rho_ed_2 =  -.0733091
+  rho_ed_1 = -.01931488
+  rho_ed_0 =   .2376428
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.03677651
+  rho_jp_6 =  -.1963637
+  rho_jp_5 = -.06257444
+  rho_jp_4 =  .13439228
+  rho_jp_3 =  .03124822
+  rho_jp_2 = -.03780255
+  rho_jp_1 =  .16787669
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.18963841
+  rho_df_2 =  .27589901
+  rho_df_1 =  -.0862606
+  rho_dm_3 = -.11757054
+  rho_dm_2 =  .17105801
+  rho_dm_1 = -.05348747
+  rho_hc_0 = -.20435911
+  rho_hc_1 =  .20435911
+delta_edu 94.01158049
+delta_jp 94-.0022843
+delta_hendow 94.04611432
+
+     +------------------------------------------------------------------------+
+     |       isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------------|
+ 39. | Refuse wor   .08712378   .04412752   .01878911   .00168806   .02251909 |
+     +------------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00857945
+  rho_ed_5 = -.22810284
+  rho_ed_4 = -.06446712
+  rho_ed_3 =  .04571492
+  rho_ed_2 =  .08934976
+  rho_ed_1 =  .16187043
+  rho_ed_0 =  .00421429
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 =   .1103327
+  rho_jp_6 = -.06331576
+  rho_jp_5 =  .08867499
+  rho_jp_4 = -.03321504
+  rho_jp_3 = -.05156081
+  rho_jp_2 =  -.0795661
+  rho_jp_1 =  .02865002
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.08873856
+  rho_df_2 =  .14624087
+  rho_df_1 = -.05750231
+  rho_dm_3 = -.03725338
+  rho_dm_2 =  .07909548
+  rho_dm_1 = -.04184209
+  rho_hc_0 = -.09038204
+  rho_hc_1 =  .09038204
+delta_edu 96.01878911
+delta_jp 96.00168807
+delta_hendow 96.02251909
+
+     +------------------------------------------------------------------+
+     | isco   beta_na~e   beta_full   delta_e~n   delta_j~t   delta_h~w |
+     |------------------------------------------------------------------|
+ 40. |   99   .04842806   .01979183   .01586613   .00136807   .01140204 |
+     +------------------------------------------------------------------+
+GAMMA Impact of isced on bad health at 50+
+gamma_ed_6 = -.11286983
+gamma_ed_5 =  -.0459902
+gamma_ed_4 =          0
+gamma_ed_3 =  .00882157
+gamma_ed_2 =  .02916954
+gamma_ed_1 =  .02612506
+gamma_ed_0 =  .02178502
+RHO propensity of occ. to be over/under exposed to different isced
+  rho_ed_6 = -.00743599
+  rho_ed_5 = -.15192691
+  rho_ed_4 = -.04095762
+  rho_ed_3 = -.17634781
+  rho_ed_2 =  .10483739
+  rho_ed_1 =  .14180545
+  rho_ed_0 =   .1300255
+GAMMA Impact of job_parent on bad health at 50+
+gamma_jp_7 =  .00632671
+gamma_jp_6 =  .00608121
+gamma_jp_5 = -.00308205
+gamma_jp_4 =          0
+gamma_jp_3 = -.02779429
+gamma_jp_2 = -.00336862
+gamma_jp_1 =  -.0018417
+RHO propensity of occ. to be over/under exposed to different job_parent
+  rho_jp_7 = -.01526671
+  rho_jp_6 =  -.0688566
+  rho_jp_5 =  .13421856
+  rho_jp_4 = -.04345426
+  rho_jp_3 = -.08697582
+  rho_jp_2 = -.01806192
+  rho_jp_1 =  .09839675
+GAMMA Impact of hendow on bad health at 50+
+gamma_df_3 =  .07162635
+gamma_df_2 =  .08842229
+gamma_df_1 =          0
+gamma_dm_3 =  .01674089
+gamma_dm_2 =  .02451308
+gamma_dm_1 =          0
+gamma_hc_0 =          0
+gamma_hc_1 =  .16185664
+RHO propensity of occ. to be over/under exposed to different hendow
+  rho_df_3 = -.07286705
+  rho_df_2 =  .06447511
+  rho_df_1 =  .00839194
+  rho_dm_3 =  -.0035723
+  rho_dm_2 =  .02955405
+  rho_dm_1 = -.02598175
+  rho_hc_0 = -.06336193
+  rho_hc_1 =  .06336193
+delta_edu 99.01586613
+delta_jp 99.00136807
+delta_hendow 99.01140204
+
+.         
+. log close
+      name:  <unnamed>
+       log:  C:\Users\baurin\OneDrive - UCL\UCLouvain - Impact of job on health\Data & Code\Working file\Male.log
+  log type:  text
+ closed on:  19 Jan 2022, 12:25:08
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
